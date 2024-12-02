@@ -1,82 +1,88 @@
+
+
 import org.junit.Test;
+
+import java.lang.reflect.Method;
+
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 public class LoginAppTest {
 
+
     @Test
-    public void testSuccessfulLogin() {
-        // Mock database interaction
-        LoginApp app = spy(new LoginApp());
-        String email = "johndoe@example.com";
-        String password = "password123";
-        String expectedName = "John Doe";
+    public void testInvalidEmail() throws Exception {
+        LoginApp loginApp = new LoginApp();
+        Method method = LoginApp.class.getDeclaredMethod("authenticateUser", String.class, String.class);
+        method.setAccessible(true);
 
-        doReturn(expectedName).when(app).authenticateUser(email, password);
+        String userName = (String) method.invoke(loginApp, "unknown@example.com", "password123");
+        assertNull("Authentication should fail for an email that does not exist.", userName);
+    }
 
-        String result = app.authenticateUser(email, password);
 
-        assertEquals("The user should be authenticated successfully.", expectedName, result);
-        verify(app, times(1)).authenticateUser(email, password);
+    @Test
+    public void testEmptyEmail() throws Exception {
+        LoginApp loginApp = new LoginApp();
+        Method method = LoginApp.class.getDeclaredMethod("authenticateUser", String.class, String.class);
+        method.setAccessible(true);
+
+        String userName = (String) method.invoke(loginApp, "", "password123");
+        assertNull("Authentication should fail for an empty email input.", userName);
+    }
+
+
+    @Test
+    public void testSQLInjectionAttempt() throws Exception {
+        LoginApp loginApp = new LoginApp();
+        Method method = LoginApp.class.getDeclaredMethod("authenticateUser", String.class, String.class);
+        method.setAccessible(true);
+
+        String userName = (String) method.invoke(loginApp, "johndoe@example.com' OR '1'='1", "password123");
+        assertNull("Authentication should fail for an SQL injection attempt.", userName);
+    }
+
+
+    @Test
+    public void testNullEmail() throws Exception {
+        LoginApp loginApp = new LoginApp();
+        Method method = LoginApp.class.getDeclaredMethod("authenticateUser", String.class, String.class);
+        method.setAccessible(true);
+
+        String userName = (String) method.invoke(loginApp, null, "password123");
+        assertNull("Authentication should fail for a null email input.", userName);
+    }
+
+
+
+
+    @Test
+    public void testWhitespaceEmail() throws Exception {
+        LoginApp loginApp = new LoginApp();
+        Method method = LoginApp.class.getDeclaredMethod("authenticateUser", String.class, String.class);
+        method.setAccessible(true);
+
+        String userName = (String) method.invoke(loginApp, " johndoe@example.com ", "password123");
+        assertNull("Authentication should fail for emails with leading or trailing whitespace.", userName);
     }
 
     @Test
-    public void testFailedLogin() {
-        // Mock database interaction
-        LoginApp app = spy(new LoginApp());
-        String email = "nonexistent@example.com";
-        String password = "wrongpassword";
+    public void testInvalidPassword() throws Exception {
+        LoginApp loginApp = new LoginApp();
+        Method method = LoginApp.class.getDeclaredMethod("authenticateUser", String.class, String.class);
+        method.setAccessible(true);
 
-        doReturn(null).when(app).authenticateUser(email, password);
-
-        String result = app.authenticateUser(email, password);
-
-        assertNull("The user should not be authenticated.", result);
-        verify(app, times(1)).authenticateUser(email, password);
+        String userName = (String) method.invoke(loginApp, "johndoe@example.com", "wrongpassword");
+        assertNull("Authentication should fail for incorrect password.", userName);
     }
 
-    @Test
-    public void testIncorrectPassword() {
-        // Mock database interaction
-        LoginApp app = spy(new LoginApp());
-        String email = "johndoe@example.com";
-        String password = "wrongpassword";
-
-        doReturn(null).when(app).authenticateUser(email, password);
-
-        String result = app.authenticateUser(email, password);
-
-        assertNull("The authentication should fail for an incorrect password.", result);
-        verify(app, times(1)).authenticateUser(email, password);
-    }
 
     @Test
-    public void testEmptyEmailOrPassword() {
-        // Mock database interaction
-        LoginApp app = spy(new LoginApp());
-        String email = "";
-        String password = "";
+    public void testEmptyPassword() throws Exception {
+        LoginApp loginApp = new LoginApp();
+        Method method = LoginApp.class.getDeclaredMethod("authenticateUser", String.class, String.class);
+        method.setAccessible(true);
 
-        doReturn(null).when(app).authenticateUser(email, password);
-
-        String result = app.authenticateUser(email, password);
-
-        assertNull("The authentication should fail for empty email or password.", result);
-        verify(app, times(1)).authenticateUser(email, password);
-    }
-
-    @Test
-    public void testSqlInjectionAttempt() {
-        // Mock database interaction
-        LoginApp app = spy(new LoginApp());
-        String email = "anything' OR '1'='1";
-        String password = "anything' OR '1'='1";
-
-        doReturn(null).when(app).authenticateUser(email, password);
-
-        String result = app.authenticateUser(email, password);
-
-        assertNull("The authentication should fail for a SQL injection attempt.", result);
-        verify(app, times(1)).authenticateUser(email, password);
+        String userName = (String) method.invoke(loginApp, "johndoe@example.com", "");
+        assertNull("Authentication should fail for an empty password input.", userName);
     }
 }
