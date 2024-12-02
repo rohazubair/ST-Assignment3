@@ -79,4 +79,6 @@ public class LoginAppTest {
         assertNull("The authentication should fail for a SQL injection attempt.", result);
         verify(app, times(1)).authenticateUser(email, password);
     }
+
+    //snakeeeeeeehh
 }
