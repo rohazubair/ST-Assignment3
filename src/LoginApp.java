@@ -23,6 +23,7 @@ public class LoginApp extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(3, 2, 10, 10));
 
+//random comment
         // Email Label and Text Field
         panel.add(new JLabel("Email:"));
         emailField = new JTextField();
