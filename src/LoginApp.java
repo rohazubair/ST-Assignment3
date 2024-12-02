@@ -12,7 +12,7 @@ public class LoginApp extends JFrame {
     private JPasswordField passwordField;
     private static final String DB_URL = "jdbc:mysql://localhost:3306/db";
     private static final String DB_USER = "root";
-    public static String DB_PASSWORD = "Rz-74938";
+    private static final String DB_PASSWORD = "Rz-74938";
 
     public LoginApp() {
         setTitle("Login Screen");
@@ -41,7 +41,6 @@ public class LoginApp extends JFrame {
         add(panel);
     }
 
-//ORIGINAL CODE
     private class LoginAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -57,25 +56,7 @@ public class LoginApp extends JFrame {
         }
     }
 
-
-// CORRECTED CODE
-//    private class LoginAction implements ActionListener {
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//            String email = emailField.getText();
-//            String password = new String(passwordField.getPassword());
-//
-//            String userName = authenticateUser(email, password);
-//            if (userName != null) {
-//                JOptionPane.showMessageDialog(null, "Welcome, " + userName + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
-//            } else {
-//                JOptionPane.showMessageDialog(null, "Invalid email or password.", "Login Failed", JOptionPane.ERROR_MESSAGE);
-//            }
-//        }
-//    }
-
-//ORIGINAL CODE
-    String authenticateUser(String email) {
+    private String authenticateUser(String email) {
         String userName = null;
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             String query = "SELECT name FROM User WHERE Email = ?";
@@ -94,32 +75,6 @@ public class LoginApp extends JFrame {
         return userName;
     }
 
-// CORRECTED CODE
-//    String authenticateUser(String email, String password) {
-//        String userName = null;
-//        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-//
-//            String query = "SELECT Name FROM User WHERE Email = ? AND Password = ?";
-//            PreparedStatement stmt = conn.prepareStatement(query);
-//            stmt.setString(1, email);
-//            stmt.setString(2, password);
-//
-//
-//            ResultSet rs = stmt.executeQuery();
-//
-//            if (rs.next()) {
-//                userName = rs.getString("Name");
-//            }
-//
-//            rs.close();
-//            stmt.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return userName;
-//    }
-
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             LoginApp loginApp = new LoginApp();
@@ -127,4 +82,5 @@ public class LoginApp extends JFrame {
         });
     }
 }
+
 
