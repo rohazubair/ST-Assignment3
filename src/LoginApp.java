@@ -6,13 +6,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
+//after2
 public class LoginApp extends JFrame {
     private JTextField emailField;
     private JPasswordField passwordField;
     private static final String DB_URL = "jdbc:mysql://localhost:3306/db";
     private static final String DB_USER = "root";
-    public static String DB_PASSWORD = "Rz-74938";
+    private static final String DB_PASSWORD = "Rz-74938";
 
     public LoginApp() {
         setTitle("Login Screen");
@@ -41,31 +41,13 @@ public class LoginApp extends JFrame {
         add(panel);
     }
 
-//ORIGINAL CODE
-//    private class LoginAction implements ActionListener {
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//            String email = emailField.getText();
-//            String password = new String(passwordField.getPassword()); // Password is ignored for validation
-//
-//            String userName = authenticateUser(email);
-//            if (userName != null) {
-//                JOptionPane.showMessageDialog(null, "Welcome, " + userName + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
-//            } else {
-//                JOptionPane.showMessageDialog(null, "User not found.", "Login Failed", JOptionPane.ERROR_MESSAGE);
-//            }
-//        }
-//    }
-
-
-// CORRECTED CODE
     private class LoginAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String email = emailField.getText();
-            String password = new String(passwordField.getPassword());
+            String password = new String(passwordField.getPassword()); // Retrieve password entered by user
 
-            String userName = authenticateUser(email, password);
+            String userName = authenticateUser(email, password); // Pass both email and password for validation
             if (userName != null) {
                 JOptionPane.showMessageDialog(null, "Welcome, " + userName + "!", "Login Successful", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -74,46 +56,19 @@ public class LoginApp extends JFrame {
         }
     }
 
-//ORIGINAL CODE
-//    String authenticateUser(String email) {
-//        String userName = null;
-//        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-//            String query = "SELECT name FROM User WHERE Email = ?";
-//            PreparedStatement stmt = conn.prepareStatement(query);
-//            stmt.setString(1, email);
-//            ResultSet rs = stmt.executeQuery();
-//
-//            if (rs.next()) {
-//                userName = rs.getString("Name");
-//            }
-//            rs.close();
-//            stmt.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return userName;
-//    }
-
-// CORRECTED CODE
-    String authenticateUser(String email, String password) {
+    private String authenticateUser(String email, String password) {
         String userName = null;
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
-
-//            String query = "SELECT Name FROM User WHERE Email = ? AND Password = ?";
-//            PreparedStatement stmt = conn.prepareStatement(query);
-//            stmt.setString(1, email);
-//            stmt.setString(2, password);
-
-            String query = "SELECT name FROM User WHERE Email = ?";
+            // Update SQL query to include password check
+            String query = "SELECT name FROM User WHERE Email = ? AND Password = ?";
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, email);
-
+            stmt.setString(1, email);    // Set the email parameter
+            stmt.setString(2, password); // Set the password parameter
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 userName = rs.getString("Name");
             }
-
             rs.close();
             stmt.close();
         } catch (Exception e) {
@@ -121,7 +76,6 @@ public class LoginApp extends JFrame {
         }
         return userName;
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
